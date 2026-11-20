@@ -1,0 +1,8 @@
+dbt_local_demo:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('DEMO_ROOT') }}/demo.duckdb"
+      schema: main
+      threads: 1

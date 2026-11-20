@@ -1,0 +1,19 @@
+name: dbt_local_demo
+version: '1.0.0'
+config-version: 2
+profile: dbt_local_demo
+model-paths: [models]
+test-paths: [tests]
+macro-paths: [macros]
+clean-targets: [target, dbt_packages]
+models:
+  dbt_local_demo:
+    +materialized: table
+    base:
+      +schema: base
+    staging:
+      +schema: staging
+    intermediate:
+      +schema: intermediate
+    marts:
+      +schema: marts

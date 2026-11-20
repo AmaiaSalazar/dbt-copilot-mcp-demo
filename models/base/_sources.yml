@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: raw
+    description: Ficheros CSV ficticios locales; no requieren seed ni una carga previa.
+    meta:
+      external_location: "read_csv_auto('{{ env_var('DEMO_ROOT') }}/data/{name}.csv', all_varchar=true)"
+    tables:
+      - name: orders
+        description: Un registro por pedido, incluidos pendientes y cancelados.
+      - name: customers
+        description: Un registro por cliente con país sin normalizar.

@@ -1,0 +1,77 @@
+version: 2
+models:
+  - name: base_orders
+    description: "Base: un pedido por fila. Convierte los tipos del CSV sin filtrar estados."
+    columns:
+      - name: order_id
+        description: Identificador único del pedido.
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests: [not_null]
+      - name: order_amount
+        description: Importe en EUR; todos los pedidos de esta demo usan la misma moneda.
+        data_tests: [not_null]
+  - name: base_customers
+    description: "Base: un cliente por fila, con país original."
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+  - name: stg_orders
+    description: "Staging: un pedido por fila, estado sin espacios y en minúsculas."
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: order_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [completed, cancelled, pending]
+      - name: customer_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+  - name: stg_customers
+    description: "Staging: un cliente por fila, país sin espacios y en mayúsculas."
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: country
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [ES, DE, FR]
+  - name: int_orders_enriched
+    description: "Intermediate: un pedido por fila unido al país de su cliente; conserva todos los estados."
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: country
+        data_tests: [not_null]
+      - name: order_amount
+        description: Importe original en EUR; no se recalcula al unir el cliente.
+  - name: mart_sales_by_country
+    description: "Mart: una fila por país. Suma en EUR únicamente pedidos completados; excluye pendientes y cancelados."
+    columns:
+      - name: country
+        description: Código de país normalizado del cliente.
+        data_tests: [unique, not_null]
+      - name: total_sales
+        description: Suma de order_amount de los pedidos completados, en EUR.
+      - name: order_count
+        description: Número de pedidos completados del país.
+  - name: mart_average_order_value_by_country
+    description: "Mart: una fila por país. Promedio en EUR de los pedidos completados; excluye pendientes y cancelados."
+    columns:
+      - name: country
+        description: Código de país normalizado del cliente.
+        data_tests: [unique, not_null]
+      - name: average_order_value
+        description: Promedio de order_amount de los pedidos completados, en EUR.
+        data_tests: [not_null]
+      - name: order_count
+        description: Número de pedidos completados incluidos en el promedio.
+        data_tests: [not_null]

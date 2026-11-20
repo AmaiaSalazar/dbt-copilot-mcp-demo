@@ -1,0 +1,20 @@
+.DS_Store
+.venv/
+other/
+__pycache__/
+*.py[cod]
+
+# dbt-generated files
+target/
+logs/
+dbt_packages/
+
+# Local DuckDB database files
+*.duckdb
+*.duckdb.wal
+
+# Local state and secrets
+.user.yml
+.env
+.env.*
+!.env.example
