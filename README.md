@@ -1,8 +1,8 @@
-# Demo local de dbt — 8 minutos
+# Local dbt Demo — 8 Minutes
 
-**Empieza por [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md)** para instalar el proyecto en otro equipo. Ese documento está escrito para entregárselo directamente a un asistente de IA.
+**Start with [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md)** to install the project on another computer. That document is written to be handed directly to an AI assistant.
 
-Pregunta de negocio: **¿cuánto hemos vendido por país y de dónde sale ese resultado?**
+Business question: **How much have we sold by country, and where does that result come from?**
 
 ```text
 data/orders.csv ─── raw.orders ─── base_orders ─── stg_orders ───┐
@@ -11,11 +11,11 @@ data/customers.csv ─ raw.customers ─ base_customers ─ stg_customers ┘
                                     base          staging         intermediate          marts
 ```
 
-Las fuentes leen CSV directamente. Las cuatro capas se materializan como tablas en `demo.duckdb`. No hay carga previa ni `dbt seed`. Todos los importes son EUR; no se simula conversión de moneda. Los CSV contienen 10 pedidos y 5 clientes.
+The sources read CSV files directly. The four layers are materialized as tables in `demo.duckdb`. There is no prior loading step or `dbt seed`. All amounts are in EUR; no currency conversion is simulated. The CSV files contain 10 orders and 5 customers.
 
-## Comandos diarios
+## Daily commands
 
-Desde esta carpeta, después de instalar:
+After installation, run these commands from this folder:
 
 ```bash
 .venv/bin/python demo.py build
@@ -25,13 +25,13 @@ Desde esta carpeta, después de instalar:
 .venv/bin/python demo.py serve
 ```
 
-En Windows sustituye `.venv/bin/python` por `.venv\Scripts\python.exe`.
+On Windows, replace `.venv/bin/python` with `.venv\Scripts\python.exe`.
 
-Abre http://localhost:8080 para explorar dbt Docs; Ctrl+C detiene el servidor. En el catálogo busca `mart_sales_by_country`, abre el grafo y expande sus antecesores. El manifest se genera en `target/manifest.json`.
+Open http://localhost:8080 to explore dbt Docs; Ctrl+C stops the server. In the catalog, search for `mart_sales_by_country`, open the graph, and expand its ancestors. The manifest is generated at `target/manifest.json`.
 
-`demo.py` fija automáticamente el directorio del proyecto, la ubicación del perfil y la ruta absoluta de los CSV. Se puede invocar desde otra carpeta. Usar este punto de entrada evita configurar variables a mano.
+`demo.py` automatically sets the project directory, profile location, and absolute CSV paths. It can be invoked from another folder. Using this entry point avoids setting environment variables manually.
 
-## Resultado esperado
+## Expected result
 
 | country | total_sales (EUR) | order_count |
 |---|---:|---:|
@@ -39,25 +39,25 @@ Abre http://localhost:8080 para explorar dbt Docs; Ctrl+C detiene el servidor. E
 | ES | 350.00 | 3 |
 | FR | 150.00 | 2 |
 
-Total: **600 EUR y 7 pedidos completados**. Los pendientes y cancelados permanecen en intermediate, pero se excluyen del mart. Staging convierte `COMPLETED` en `completed` y limpia los códigos de país.
+Total: **EUR 600 across 7 completed orders**. Pending and cancelled orders remain in the intermediate model but are excluded from the mart. Staging converts `COMPLETED` to `completed` and cleans the country codes.
 
-Hay 6 modelos y 21 tests, incluida una comprobación de los resultados de negocio. Al modificar intencionadamente los datos, adapta ese test si cambian los resultados esperados.
+There are 6 models and 21 tests, including a business-result assertion. If you intentionally change the data, update that test when the expected results change.
 
-## Mostrar tablas
+## View the tables
 
-`demo.py tables` muestra cuatro tablas y cierra la conexión automáticamente. No requiere instalar el CLI de DuckDB ni DBeaver.
+`demo.py tables` displays four tables and closes the connection automatically. It does not require the DuckDB CLI or DBeaver.
 
-Para una interfaz visual, instala DBeaver Community, crea una conexión **DuckDB** y selecciona el fichero `demo.duckdb` de esta carpeta. Acepta la descarga del driver durante la preparación. Abre `queries/demo.sql`; los esquemas se llaman exactamente `base`, `staging`, `intermediate` y `marts`.
+For a visual interface, install DBeaver Community, create a **DuckDB** connection, and select this folder's `demo.duckdb` file. Accept the driver download during setup. Open `queries/demo.sql`; the schemas are named exactly `base`, `staging`, `intermediate`, and `marts`.
 
-Desconecta DBeaver antes de ejecutar dbt o consultas MCP que abran la base desde otro proceso; vuelve a conectarlo al terminar. La documentación ya generada se puede consultar sin mantener abierta una conexión a DuckDB.
+Disconnect DBeaver before running dbt or MCP queries that open the database from another process; reconnect when finished. Previously generated documentation can be viewed without keeping a DuckDB connection open.
 
-## Documentos
+## Documents
 
-- [DEMO_DOCUMENTATION.md](DEMO_DOCUMENTATION.md): documentación completa en inglés para reproducir y entender la demo.
-- [SOCIAL_POST.md](SOCIAL_POST.md): resumen listo para compartir.
-- [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md): instalación, traslado entre equipos y diagnóstico.
-- [MCP.md](MCP.md): conectar el servidor oficial a un asistente y prompts.
+- [DEMO_DOCUMENTATION.md](DEMO_DOCUMENTATION.md): complete guide to understanding and reproducing the demo.
+- [SOCIAL_POST.md](SOCIAL_POST.md): a summary ready to share.
+- [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md): installation, moving between computers, and troubleshooting.
+- [MCP.md](MCP.md): connecting the official server to an assistant and prepared prompts.
 
-## Compartir en GitHub
+## Sharing on GitHub
 
-El repositorio incluye los ficheros fuente, los CSV ficticios y la documentación para reproducir la demo. Los guiones locales de presentación de `other/` no se publican. `.gitignore` excluye esa carpeta, el entorno virtual, los artefactos generados por dbt, la base de datos local y el estado local de dbt. Cada persona crea su propio entorno virtual siguiendo [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md). La configuración MCP del proyecto usa rutas relativas al workspace; no publiques credenciales ni configuraciones con rutas locales absolutas.
+The repository includes the source files, fictional CSVs, and documentation needed to reproduce the demo. The local presentation scripts in `other/` are not published. `.gitignore` excludes that folder, the virtual environment, dbt-generated artifacts, the local database, and local dbt state. Each person creates their own virtual environment by following [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md). The project's MCP configuration uses workspace-relative paths; do not publish credentials or configurations with absolute local paths.

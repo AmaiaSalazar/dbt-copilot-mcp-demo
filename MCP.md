@@ -1,64 +1,64 @@
-# MCP oficial de dbt con el proyecto local
+# Official dbt MCP with the local project
 
-Este proyecto usa el paquete oficial `dbt-mcp`, instalado desde `requirements-mcp.txt`. El lanzador `demo.py mcp` habilita el conjunto de herramientas CLI y fija `DBT_PROJECT_DIR`, `DBT_PATH`, `DBT_PROFILES_DIR` y `DEMO_ROOT` para este equipo.
+This project uses the official `dbt-mcp` package, installed from `requirements-mcp.txt`. The `demo.py mcp` launcher enables the CLI toolset and sets `DBT_PROJECT_DIR`, `DBT_PATH`, `DBT_PROFILES_DIR`, and `DEMO_ROOT` for this machine.
 
-No requiere cuenta de dbt Platform. Los métodos de Discovery en la nube y Semantic Layer no forman parte de esta demo. Para lineage local usamos **`get_lineage_dev`** y para detalles **`get_node_details_dev`**, no los métodos de Discovery con nombres parecidos.
+A dbt Platform account is not required. Cloud Discovery and Semantic Layer methods are not part of this demo. For local lineage, use **`get_lineage_dev`**; for model details, use **`get_node_details_dev`**, not similarly named Discovery methods.
 
-## 1. Validar el servidor
+## 1. Validate the server
 
-Después de build:
+After building the project, run:
 
 ```bash
 .venv/bin/python scripts/check_mcp.py
 ```
 
-En Windows usa `.\.venv\Scripts\python.exe`. El script abre una sesión real por stdio, inicializa el protocolo, enumera herramientas y verifica que están disponibles las necesarias para la demo.
+On Windows, use `.\.venv\Scripts\python.exe`. The script opens a real stdio session, initializes the protocol, lists the tools, and verifies that the tools required for the demo are available.
 
-## 2. Generar configuración con rutas reales
+## 2. Generate configuration with local paths
 
 ```bash
 .venv/bin/python demo.py mcp-config
 ```
 
-En Windows ejecuta `.\.venv\Scripts\python.exe demo.py mcp-config`.
+On Windows, run `.\.venv\Scripts\python.exe demo.py mcp-config`.
 
-El comando imprime JSON con `mcpServers`, el Python absoluto del entorno y la ruta absoluta a `demo.py`. Claude Desktop y Cursor suelen aceptar ese formato. No reemplaces la configuración MCP existente: integra la entrada `dbt-demo` y conserva los demás servidores.
+The command prints JSON with `mcpServers`, the environment's absolute Python path, and the absolute path to `demo.py`. Claude Desktop and Cursor usually accept this format. Do not replace your existing MCP configuration: add the `dbt-demo` entry and preserve the other servers.
 
-En VS Code, el proyecto ya incluye `.vscode/mcp.json`. Esa configuración usa la ruta de macOS/Linux `${workspaceFolder}/.venv/bin/python`. En Windows cambia `command` a `${workspaceFolder}/.venv/Scripts/python.exe`; conserva `args` como `["${workspaceFolder}/demo.py", "mcp"]`.
+In VS Code, the project already includes `.vscode/mcp.json`. It uses the macOS/Linux path `${workspaceFolder}/.venv/bin/python`. On Windows, change `command` to `${workspaceFolder}/.venv/Scripts/python.exe`; keep `args` as `["${workspaceFolder}/demo.py", "mcp"]`.
 
-Si prefieres usar las rutas absolutas que imprime `mcp-config` en VS Code, adapta la entrada al formato de VS Code: usa el contenedor superior `servers` y añade `"type": "stdio"` al servidor. Copia los valores de `command` y `args` generados; no pegues directamente el contenedor `mcpServers`.
+If you prefer to use the absolute paths printed by `mcp-config` in VS Code, adapt the entry to VS Code's format: use the top-level `servers` object and add `"type": "stdio"` to the server. Copy the generated `command` and `args` values; do not paste the `mcpServers` object directly.
 
-Si el cliente tiene una interfaz de configuración, introduce como comando el valor de `command` y como argumentos los dos valores de `args`. Reinicia o recarga la conexión MCP y comprueba las herramientas disponibles. El lanzador conserva stdout para el protocolo; no requiere activar el entorno en el cliente.
+If the client has a configuration interface, enter the value of `command` as the command and the two values in `args` as its arguments. Restart or reload the MCP connection and check the available tools. The launcher reserves stdout for the protocol; the client does not need to activate the environment.
 
-La integración en una aplicación concreta se hace en el equipo del presentador. La configuración debe regenerarse al cambiar de carpeta o de ordenador.
+Configure the integration on the presenter's machine. Regenerate the configuration after moving the folder or changing computers.
 
-## 3. Prompts preparados
+## 3. Prepared prompts
 
-### Comprender el modelo y demostrar el lineage
+### Understand the model and demonstrate lineage
 
-> Usa las herramientas del MCP dbt-demo. Consulta los detalles locales de mart_sales_by_country y su lineage completo de antecesores con get_lineage_dev y depth=0. Explica en español, en un máximo de 6 frases, qué calcula, su granularidad, qué pedidos excluye y cuáles son sus cuatro capas. Indica las herramientas utilizadas. No modifiques ficheros.
+> Use the dbt-demo MCP tools. Get the local details for mart_sales_by_country and its complete upstream lineage with get_lineage_dev and depth=0. In no more than 6 sentences, explain in Spanish what it calculates, its grain, which orders it excludes, and its four layers. Name the tools used. Do not modify any files.
 
-Esperado: una fila por país, EUR, solo completed, dos fuentes y las cuatro capas. En `get_lineage_dev`, `depth=0` significa recorrer el lineage completo. El asistente debe usar `get_node_details_dev` y `get_lineage_dev` con los argumentos expuestos por el servidor.
+Expected: one row per country, in EUR, completed orders only, two sources, and all four layers. In `get_lineage_dev`, `depth=0` means traverse the complete lineage. The assistant should use `get_node_details_dev` and `get_lineage_dev` with the arguments exposed by the server.
 
-### Consultar el resultado
+### Query the result
 
-> Usa la herramienta show de dbt para ejecutar SELECT country, total_sales, order_count FROM marts.mart_sales_by_country ORDER BY country. Resume los resultados y calcula el total. No uses execute_sql de dbt Platform.
+> Use dbt's show tool to run SELECT country, total_sales, order_count FROM marts.mart_sales_by_country ORDER BY country. Summarize the results and calculate the total. Do not use dbt Platform's execute_sql.
 
-Esperado: DE 100, ES 350, FR 150; total 600 EUR, 7 pedidos.
+Expected: DE 100, ES 350, FR 150; total EUR 600 across 7 orders.
 
-### Impacto de un cambio (reserva)
+### Impact of a change (backup prompt)
 
-> Consulta con el MCP el lineage descendente de stg_orders. Si cambiamos el cálculo de order_amount, ¿qué modelos derivados deben revisarse? Propón una selección dbt para reconstruirlos y validar sus tests. No ejecutes cambios.
+> Use MCP to inspect the downstream lineage of stg_orders. If we change the calculation of order_amount, which downstream models should be reviewed? Suggest a dbt selection to rebuild them and validate their tests. Do not make any changes.
 
-Esperado: `int_orders_enriched` y `mart_sales_by_country`, selección `stg_orders+`; revisar también la comprobación de negocio del mart.
+Expected: `int_orders_enriched` and `mart_sales_by_country`, selected with `stg_orders+`; also review the mart's business assertion.
 
-## Qué mostrar
+## What to show
 
-Enseña al menos una llamada visible y su respuesta. La IA interpreta la evidencia; el MCP proporciona acceso a herramientas y contexto. La precisión de la explicación se contrasta con los resultados y el SQL.
+Show at least one visible tool call and its response. The AI interprets the evidence; MCP provides access to tools and context. Check the explanation against the results and SQL.
 
-Un asistente alojado en la nube necesita Internet. Para una sesión completamente offline también hay que disponer de un cliente y modelo de IA locales compatibles con MCP; no se incluye la descarga de un modelo en esta carpeta.
+A cloud-hosted assistant needs an internet connection. For a fully offline session, you also need a local AI client and model that support MCP; this folder does not include a model download.
 
-## Referencias oficiales
+## Official references
 
 - https://docs.getdbt.com/docs/dbt-ai/setup-local-mcp
 - https://github.com/dbt-labs/dbt-mcp

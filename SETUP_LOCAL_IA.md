@@ -1,26 +1,26 @@
-# Preparar la demo en local — instrucciones para un asistente de IA
+# Set Up the Local Demo — Instructions for an AI Assistant
 
-## Objetivo y alcance
+## Goal and scope
 
-Configura esta carpeta en el equipo actual y comprueba que funcionan dbt, DuckDB, los datos ficticios, los tests, la documentación y el servidor MCP oficial. Trabaja dentro de esta carpeta, sin Git y sin servicios de dbt Platform. Conserva los CSV y la lógica de negocio de la demo.
+Set up this folder on the current computer and verify that dbt, DuckDB, the fictional data, tests, documentation, and the official MCP server work. Work inside this folder without requiring Git or dbt Platform services. Preserve the CSV files and the demo's business logic.
 
-Lee primero `README.md` y sigue estos pasos en orden. Para la configuración del cliente de IA, lee también `MCP.md`.
+Read `README.md` first and follow these steps in order. For AI client configuration, also read `MCP.md`.
 
-## 1. Detectar entorno
+## 1. Check the environment
 
-Identifica sistema operativo, ruta absoluta de esta carpeta y Python disponible. Usa **Python 3.12** para reproducir el entorno probado. Python 3.14 no es compatible con algunas dependencias de esta combinación de dbt.
+Identify the operating system, this folder's absolute path, and the available Python versions. Use **Python 3.12** to reproduce the tested environment. Python 3.14 is incompatible with some dependencies in this dbt combination.
 
-Si falta Python 3.12:
+If Python 3.12 is missing:
 
-- macOS con Homebrew: `brew install python@3.12`.
-- Windows: instala Python 3.12 desde python.org o `winget install -e --id Python.Python.3.12`; abre una terminal nueva y comprueba `py -3.12 --version`.
-- Linux: instala Python 3.12 y su módulo `venv` con el gestor de la distribución; si no está disponible y existe `uv`, usa `uv python install 3.12` y `uv venv --python 3.12 .venv`.
+- macOS with Homebrew: `brew install python@3.12`.
+- Windows: install Python 3.12 from python.org or run `winget install -e --id Python.Python.3.12`; open a new terminal and check `py -3.12 --version`.
+- Linux: install Python 3.12 and its `venv` module using the distribution's package manager. If unavailable and `uv` is installed, run `uv python install 3.12` and `uv venv --python 3.12 .venv`.
 
-Comprueba que el intérprete elegido informa 3.12 antes de continuar. Si necesitas instalación administrativa sin permisos, comunica el comando pendiente y continúa con las comprobaciones independientes.
+Verify that the selected interpreter reports version 3.12 before continuing. If installation requires administrative privileges that are unavailable, tell the user which command is pending and continue with independent checks.
 
-## 2. Crear entorno e instalar
+## 2. Create the environment and install dependencies
 
-Ejecuta desde la carpeta que contiene `dbt_project.yml`.
+Run these commands from the folder containing `dbt_project.yml`.
 
 macOS/Linux:
 
@@ -38,15 +38,15 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip check
 ```
 
-Si `.venv` procede de otro ordenador o usa otra versión de Python, reemplaza únicamente ese entorno generado y créalo de nuevo. No hace falta activar el entorno ni modificar el perfil global `~/.dbt/profiles.yml`.
+If `.venv` came from another computer or uses a different Python version, replace only that generated environment and recreate it. There is no need to activate the environment or modify the global profile at `~/.dbt/profiles.yml`.
 
-DuckDB se instala como dependencia Python: **no necesitas Docker, Node, un servidor SQL ni el ejecutable independiente de DuckDB**. La primera instalación necesita Internet. Las versiones principales están fijadas en los requirements; las dependencias transitivas se resuelven con pip.
+DuckDB is installed as a Python dependency: **Docker, Node, a SQL server, and the standalone DuckDB executable are not required**. The initial installation requires internet access. The main package versions are pinned in the requirements files; pip resolves transitive dependencies.
 
-Criterio: instalación y `pip check` terminan correctamente.
+Acceptance criterion: installation and `pip check` complete successfully.
 
-## 3. Ejecutar y validar
+## 3. Run and validate
 
-En los ejemplos siguientes, Windows usa `.\.venv\Scripts\python.exe` como intérprete.
+In the examples below, Windows uses `.\.venv\Scripts\python.exe` as the interpreter.
 
 ```bash
 .venv/bin/python demo.py doctor
@@ -56,46 +56,46 @@ En los ejemplos siguientes, Windows usa `.\.venv\Scripts\python.exe` como intér
 .venv/bin/python demo.py docs
 ```
 
-Criterios de aceptación:
+Acceptance criteria:
 
-- `doctor`: conexión correcta.
-- `build`: 6 modelos y 21 tests correctos, sin errores ni skips.
-- `tables`: DE=100/2, ES=350/3, FR=150/2; el comando también comprueba esos valores.
-- `lineage`: dos fuentes CSV y las cuatro capas hasta el mart.
-- existen `demo.duckdb`, `target/manifest.json`, `target/catalog.json` y `target/index.html`.
+- `doctor`: connection succeeds.
+- `build`: all 6 models and 21 tests pass, with no errors or skips.
+- `tables`: DE=100/2, ES=350/3, FR=150/2; the command also checks these values.
+- `lineage`: two CSV sources and all four layers through the mart.
+- `demo.duckdb`, `target/manifest.json`, `target/catalog.json`, and `target/index.html` exist.
 
-Los comandos se pueden repetir: las tablas se reconstruyen. Después de mover la carpeta, ejecuta de nuevo build y docs para regenerar rutas y artefactos.
+The commands can be repeated; the tables are rebuilt. After moving the folder, run build and docs again to regenerate paths and artifacts.
 
-## 4. Abrir documentación y preparar visualización
+## 4. Open the documentation and prepare the visualization
 
 ```bash
 .venv/bin/python demo.py serve
 ```
 
-Abre http://localhost:8080 y comprueba que aparece el modelo final y su grafo. El servidor es un proceso de larga duración: ejecútalo en una terminal independiente. Detén con Ctrl+C. Si el puerto está ocupado, identifica el proceso o usa el comando dbt docs serve con otro puerto y las variables que configura `demo.py`.
+Open http://localhost:8080 and verify that the final model and its graph appear. The server is a long-running process, so run it in a separate terminal. Stop it with Ctrl+C. If the port is occupied, identify the process or use `dbt docs serve` with another port and the variables configured by `demo.py`.
 
-Usa `demo.py tables` como visor sin dependencias adicionales. Si el presentador quiere DBeaver, sigue la sección correspondiente de `README.md`; descarga su driver antes de la demo. Cierra su conexión antes de escribir la base con dbt.
+Use `demo.py tables` as a viewer with no additional dependencies. If the presenter wants to use DBeaver, follow the relevant section in `README.md` and download its driver before the demo. Close its connection before writing to the database with dbt.
 
-## 5. MCP e IA
+## 5. MCP and AI
 
-Sigue `MCP.md`: ejecuta el smoke test, genera la configuración de rutas del equipo actual e intégrala en el cliente que el usuario utilice. Si no sabes cuál utiliza, pregunta solo por ese dato mientras completas el resto de la instalación.
+Follow `MCP.md`: run the smoke test, generate configuration for the current machine, and integrate it with the client's existing configuration. If you do not know which client the user uses, ask only for that information while completing the rest of the setup.
 
-La configuración generada es un fragmento para integrar en la configuración existente, preservando las demás entradas. El esquema exacto depende del cliente. No declares completada la conexión al asistente solo porque arranque el proceso: verifica herramientas visibles y una consulta real desde ese cliente.
+The generated configuration is a fragment to integrate into the existing configuration while preserving its other entries. The exact format depends on the client. Do not consider the assistant connection complete just because the process starts; verify that the tools are visible and run a real query from that client.
 
-Criterio: servidor validado por protocolo y cliente de IA conectado, o bloqueo del cliente identificado explícitamente. La ejecución SQL local funciona sin Internet una vez instaladas las dependencias; una IA remota sí necesita conexión.
+Acceptance criterion: the server passes protocol validation and the AI client is connected, or the client-specific blocker is clearly identified. Local SQL execution works offline after dependencies are installed; a remote AI assistant still needs an internet connection.
 
-## Diagnóstico
+## Troubleshooting
 
-| Síntoma | Acción |
+| Symptom | Action |
 |---|---|
-| `mashumaro`, `UnserializableField` con Python 3.14 | Recrear `.venv` con Python 3.12. |
-| `DEMO_ROOT` no definido al usar dbt directamente | Ejecutar `demo.py`; este fija las variables y el perfil. |
-| CSV no encontrado tras mover la carpeta | Reejecutar build y docs mediante `demo.py`. |
-| Conflicto de bloqueo DuckDB | Desconectar DBeaver y terminar otras conexiones; ejecutar comandos secuencialmente. |
-| Error SSL/proxy al instalar | Usar proxy y CA corporativa del equipo (`HTTPS_PROXY`, `PIP_CERT` cuando proceda); conservar verificación TLS. |
-| MCP no encuentra ejecutable | Regenerar configuración con el Python de `.venv` en la nueva ubicación. |
-| MCP no ve un modelo nuevo | Regenerar manifest con build o parse y volver a consultar. |
+| `mashumaro`, `UnserializableField` with Python 3.14 | Recreate `.venv` with Python 3.12. |
+| `DEMO_ROOT` is not set when running dbt directly | Run `demo.py`; it sets the variables and profile. |
+| CSV not found after moving the folder | Rerun build and docs through `demo.py`. |
+| DuckDB lock conflict | Disconnect DBeaver and close other connections; run commands sequentially. |
+| SSL/proxy error during installation | Use the computer's proxy and corporate CA (`HTTPS_PROXY`, `PIP_CERT` when appropriate); keep TLS verification enabled. |
+| MCP cannot find the executable | Regenerate the configuration using `.venv`'s Python at the new location. |
+| MCP does not see a new model | Regenerate the manifest with build or parse, then query again. |
 
-## Entrega
+## Handoff
 
-Devuelve al usuario la ruta de la carpeta, versiones instaladas, resultados de cada criterio, comando para arrancar Docs y estado real del MCP en su cliente. Distingue instalación del servidor y conexión del cliente. Usa `DEMO_8_MIN.md` para dejar las pantallas listas para el ensayo.
+Tell the user the folder path, installed versions, results for each criterion, the command to start Docs, and the actual MCP status in their client. Distinguish server installation from client connection. The optional local presentation script is `other/DEMO_8_MIN.md`; it is not included in the GitHub repository.
