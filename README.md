@@ -54,7 +54,6 @@ Disconnect DBeaver before running dbt or MCP queries that open the database from
 ## Documents
 
 - [DEMO_DOCUMENTATION.md](DEMO_DOCUMENTATION.md): complete guide to understanding and reproducing the demo.
-- [SOCIAL_POST.md](SOCIAL_POST.md): a summary ready to share.
 - [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md): installation, moving between computers, and troubleshooting.
 - [MCP.md](MCP.md): connecting the official server to an assistant and prepared prompts.
 
