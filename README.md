@@ -1,4 +1,4 @@
-# Local dbt Demo — 8 Minutes
+# Local dbt Demo
 
 **Start with [SETUP_LOCAL_IA.md](SETUP_LOCAL_IA.md)** to install the project on another computer. That document is written to be handed directly to an AI assistant.
 
